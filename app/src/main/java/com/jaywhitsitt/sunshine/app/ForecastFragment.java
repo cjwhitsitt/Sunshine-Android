@@ -34,8 +34,7 @@ import java.util.Date;
  */
 public class ForecastFragment extends Fragment {
 
-    public ForecastFragment() {
-    }
+    ArrayAdapter<String> mForecastAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,17 +68,14 @@ public class ForecastFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         String[] forecastArray = {
-                "Today - Sunny - 83/63",
-                "Tomorrow - Foggy - 70/62",
-                "Weds - Rainy - 83/74",
-                "Thurs - Cloudy - 67/61"
+                "Click the menu button, then Refresh to see the forecast",
         };
 
         ArrayList<String> weekForecast = new ArrayList<>(
                 Arrays.asList(forecastArray)
         );
 
-        ArrayAdapter<String> mForecastAdapter = new ArrayAdapter<String>(
+        mForecastAdapter = new ArrayAdapter<String>(
                 getActivity(),
                 R.layout.list_item_layout,
                 R.id.list_item_forecast_textview,
@@ -131,7 +127,6 @@ public class ForecastFragment extends Fragment {
                         .build();
 
                 URL url = new URL(builtUri.toString());
-                Log.v(LOG_TAG, "Forecast API call = " + url.toString());
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -265,8 +260,18 @@ public class ForecastFragment extends Fragment {
                 highAndLow = formatHighLows(high, low);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
-            
+
             return resultStrs;
+        }
+
+        @Override
+        protected void onPostExecute(String[] strings) {
+            if (strings != null) {
+                mForecastAdapter.clear();
+                for (String dayForecastStr : strings) {
+                    mForecastAdapter.add(dayForecastStr);
+                }
+            }
         }
     }
 }
