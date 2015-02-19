@@ -74,19 +74,11 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        String[] forecastArray = {
-                "Click the menu button, then Refresh to see the forecast",
-        };
-
-        ArrayList<String> weekForecast = new ArrayList<>(
-                Arrays.asList(forecastArray)
-        );
-
         mForecastAdapter = new ArrayAdapter<String>(
                 getActivity(),
                 R.layout.list_item_layout,
                 R.id.list_item_forecast_textview,
-                weekForecast
+                new ArrayList<String>()
         );
 
         final ListView listView = (ListView)rootView.findViewById(R.id.listview_forecast);
