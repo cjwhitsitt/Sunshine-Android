@@ -1,8 +1,12 @@
 package com.jaywhitsitt.sunshine.app;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,8 +15,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +40,7 @@ import java.util.Date;
  */
 public class ForecastFragment extends Fragment {
 
+    private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
     ArrayAdapter<String> mForecastAdapter;
 
     @Override
@@ -41,6 +48,8 @@ public class ForecastFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // menu options?
         setHasOptionsMenu(true);
+
+        getTheWeather();
     }
 
     @Override
@@ -55,10 +64,10 @@ public class ForecastFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("94043");
+            getTheWeather();
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -82,12 +91,39 @@ public class ForecastFragment extends Fragment {
                 weekForecast
         );
 
-        ListView listView = (ListView)rootView.findViewById(R.id.listview_forecast);
+        final ListView listView = (ListView)rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CharSequence text = mForecastAdapter.getItem(position);
+
+                /* Show Toast
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(getActivity(), text, duration);
+                toast.show();
+                */
+
+                /* Start DetailActivity */
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, text);
+                startActivity(intent);
+            }
+        });
 
         // do the async task
 
         return rootView;
+    }
+
+    private void getTheWeather() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String key = getString(R.string.pref_location_key);
+        String defaultValue = getString(R.string.pref_location_default);
+        String locPref = prefs.getString(key, defaultValue);
+
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        weatherTask.execute(locPref);
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
@@ -271,6 +307,9 @@ public class ForecastFragment extends Fragment {
                 for (String dayForecastStr : strings) {
                     mForecastAdapter.add(dayForecastStr);
                 }
+
+                Toast.makeText(getActivity(), "Refreshed", Toast.LENGTH_SHORT)
+                    .show();
             }
         }
     }
