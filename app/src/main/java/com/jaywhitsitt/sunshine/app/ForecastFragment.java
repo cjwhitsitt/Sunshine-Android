@@ -48,8 +48,6 @@ public class ForecastFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // menu options?
         setHasOptionsMenu(true);
-
-        getTheWeather();
     }
 
     @Override
@@ -124,6 +122,12 @@ public class ForecastFragment extends Fragment {
 
         FetchWeatherTask weatherTask = new FetchWeatherTask();
         weatherTask.execute(locPref);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getTheWeather();
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
