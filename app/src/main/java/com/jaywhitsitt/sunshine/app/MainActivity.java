@@ -20,9 +20,8 @@ public class MainActivity extends ActionBarActivity {
                     .commit();
         }
 
-        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+        // PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

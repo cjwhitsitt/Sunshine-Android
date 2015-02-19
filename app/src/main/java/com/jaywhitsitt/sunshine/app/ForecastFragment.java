@@ -1,6 +1,5 @@
 package com.jaywhitsitt.sunshine.app;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -32,7 +31,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -62,7 +60,7 @@ public class ForecastFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            getTheWeather();
+            updateWeather();
             return true;
         }
 
@@ -106,20 +104,21 @@ public class ForecastFragment extends Fragment {
         return rootView;
     }
 
-    private void getTheWeather() {
+    private void updateWeather() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String key = getString(R.string.pref_location_key);
-        String defaultValue = getString(R.string.pref_location_default);
-        String locPref = prefs.getString(key, defaultValue);
+
+        String locationKey = getString(R.string.pref_location_key);
+        String locationDefault = getString(R.string.pref_location_default);
+        String location = prefs.getString(locationKey, locationDefault);
 
         FetchWeatherTask weatherTask = new FetchWeatherTask();
-        weatherTask.execute(locPref);
+        weatherTask.execute(location);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        getTheWeather();
+        updateWeather();
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
@@ -263,6 +262,12 @@ public class ForecastFragment extends Fragment {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
 
+            // Metric or imperial?
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String unitKey = getString(R.string.pref_units_key);
+            String unitDefault = getString(R.string.pref_units_default);
+            String unit = prefs.getString(unitKey, unitDefault);
+
             String[] resultStrs = new String[numDays];
             for(int i = 0; i < weatherArray.length(); i++) {
                 // For now, using the format "Day, description, hi/low"
@@ -288,6 +293,13 @@ public class ForecastFragment extends Fragment {
                 JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
+
+                // Metric or imperial?
+                if (unit != getString(R.string.pref_units_value_metric)) {
+                    // should be changed to support multiple values above 0 (eg, if kelvin is ever added)
+                    high = high*9/5+32;
+                    low = low*9/5+32;
+                }
 
                 highAndLow = formatHighLows(high, low);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
