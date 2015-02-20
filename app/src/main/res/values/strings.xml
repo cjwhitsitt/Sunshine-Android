@@ -34,5 +34,6 @@
 
     <!-- Miscellaneous -->
     <string name="hello_world">Hello world!</string>
+    <string name="action_share">Share</string>
 
 </resources>
