@@ -11,6 +11,7 @@
     <!-- Action items -->
     <string name="action_settings">Settings</string>
     <string name="action_refresh" translatable="false">Refresh</string>
+    <string name="action_map">Map</string>
 
     <!-- Preferences -->
     <string name="pref_location_label">Location</string>
