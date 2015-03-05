@@ -21,6 +21,8 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
 
+import java.net.URI;
+
 /**
  * Defines table and column names for the weather database.
  */
@@ -58,9 +60,7 @@ public class WeatherContract {
         return time.setJulianDay(julianDay);
     }
 
-    /*
-        Inner class that defines the contents of the location table
-     */
+    /* Inner class that defines the contents of the location table */
     public static final class LocationEntry implements BaseColumns {
 
         public static final String TABLE_NAME = "location";
@@ -144,7 +144,7 @@ public class WeatherContract {
             Student: Fill in this buildWeatherLocation function
          */
         public static Uri buildWeatherLocation(String locationSetting) {
-            return null;
+            return CONTENT_URI.buildUpon().appendPath(locationSetting).build();
         }
 
         public static Uri buildWeatherLocationWithStartDate(
