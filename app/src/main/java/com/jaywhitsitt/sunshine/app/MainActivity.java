@@ -99,13 +99,10 @@ public class MainActivity extends ActionBarActivity {
         final String BASE = "geo:0,0?";
         final String QUERY_PARAM = "q";
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String locationKey = getString(R.string.pref_location_key);
-        String locationDefault = getString(R.string.pref_location_default);
-        String queryValue = prefs.getString(locationKey, locationDefault);
+        String location = Utility.getPreferredLocation(this);
 
         Uri uri = Uri.parse(BASE).buildUpon()
-                .appendQueryParameter(QUERY_PARAM,queryValue)
+                .appendQueryParameter(QUERY_PARAM, location)
                 .build();
         Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setData(uri);
