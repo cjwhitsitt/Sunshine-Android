@@ -61,7 +61,7 @@ public class DetailActivity extends ActionBarActivity {
         private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
         private static final String SUNSHINE_HASHTAG = "#SunshineApp";
-        private String mForecastString;
+        private String mForecastStr;
 
         public DetailFragment() {
         }
@@ -79,10 +79,13 @@ public class DetailActivity extends ActionBarActivity {
 
             Intent intent = getActivity().getIntent();
 
-            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-                mForecastString = intent.getStringExtra(Intent.EXTRA_TEXT);
+            if (intent != null) {
+                mForecastStr = intent.getDataString();
+            }
+
+            if (mForecastStr != null) {
                 TextView textView = (TextView)rootView.findViewById(R.id.detail_forecast_textview);
-                textView.setText(mForecastString);
+                textView.setText(mForecastStr);
             }
 
             return rootView;
@@ -108,7 +111,7 @@ public class DetailActivity extends ActionBarActivity {
 
             shareIntent.setType("text/plain");
             shareIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-            CharSequence text = mForecastString + " " + SUNSHINE_HASHTAG;
+            CharSequence text = mForecastStr + " " + SUNSHINE_HASHTAG;
             shareIntent.putExtra(Intent.EXTRA_TEXT, text);
 
             return shareIntent;
